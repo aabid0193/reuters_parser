@@ -26,3 +26,7 @@ python reuters_parser.py --input_dir=/my/output/path/output_TIMESTAMP --output_d
 
 One can add additional parameters of the information that should be extracted: `-author`, `-title`, `-text`. 
 Furthermore it is possible to define the output types: `-json`, `-csv`.
+
+## Adapt to other pages
+
+It is very simple to adapt this to other pages having archives. Just replace to URLs in `fetch_reuters.py`.
