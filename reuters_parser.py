@@ -1,4 +1,9 @@
-
+# -*- coding: utf-8 -*-
+'''
+Copyright 2018, University of Freiburg.
+Chair of Algorithms and Data Structures.
+Markus Näther <naetherm@informatik.uni-freiburg.de>
+'''
 
 import os, sys
 import argparse
@@ -17,27 +22,21 @@ import newspaper
 rm_tokens = ['\n', '\t', '\r']
 
 
-class Artcl:
+class Artcl(object):
+  '''
+  Artcl is the description of a single article. In general every article from every
+  news/article page can be used here.
+  '''
   
   def __init__(self, ts, authors, title, href, text):
+    '''
+    Constructor.
+    '''
     self.ts = ts
     self.authors = authors
     self.title = title
     self.href = href
     self.text = text
-
-
-def csv_writer(artcl):
-  '''
-  '''
-  pass
-
-
-def json_writer(artcl):
-  '''
-  '''
-  pass  
-
 
 def parse_article(url):
   '''
@@ -45,10 +44,11 @@ def parse_article(url):
   '''
   article = Article(url)
 
-  print("url: {}".format(url))
+  print("Download data of URL: {}".format(url))
 
   article.download()
 
+  # Fallback, otherwise the program would exit on the first invalid URL
   try:
     article.parse()
   except newspaper.article.ArticleException:
@@ -62,6 +62,9 @@ def parse_article(url):
   return article
 
 def clear_string(text):
+  '''
+  Cleanup the incoming string, thereby every character of rm_tokens will be removed.
+  '''
   for c in rm_tokens:
     text = text.replace(c, '')
 
@@ -69,6 +72,9 @@ def clear_string(text):
 
 def generate_data(args):
   '''
+  The final method for generating the data output files.
+
+  The code should be self explanatory.
   '''
   in_dir = args.input_dir
   out_dir = args.output_dir
@@ -91,7 +97,7 @@ def generate_data(args):
         
         aux_author = ""
         aux_text = ""
-        # Prepare the data?
+        # Prepare the data, for the text and the authors some extra work have to be done
         if args.author or args.text:
           artcl = parse_article(item['href'])
 
@@ -133,44 +139,18 @@ def generate_data(args):
   if json_file:
     json_file.write("\n]")  
 
-  
-  if csv_file is not None:
+  # Close the files
+  if csv_file:
     csv_file.close()
-  if json_file is not None:
+  if json_file:
     json_file.close()
-
-  '''
-  for filename in iglob(data_dir + '/*.pkl'):
-            with open(filename, 'rb') as f:
-                data = pickle.load(f)
-                for datum in data:
-
-                    ts = datum['ts']
-                    if ts is None:
-                        ts = ''
-
-                    line = str(count)
-                    line += sep
-                    line += '"' + ts + '"'
-                    line += sep
-                    line += '"' + datum['title'] + '"'
-                    line += sep
-                    line += '"' + datum['href'] + '"'
-                    line += '\n'
-
-                    w.write(line)
-                    print(count)
-                    count += 1
-
-  '''
 
 def main():
   '''
+  Main routine.
   '''
 
-  argparser = argparse.ArgumentParser(
-
-  )
+  argparser = argparse.ArgumentParser()
   argparser.add_argument(
     '--input_dir',
     type=str,
@@ -179,32 +159,32 @@ def main():
   argparser.add_argument(
     '--output_dir',
     type=str,
-    help='The input directory'
+    help='The output directory'
   )
   argparser.add_argument(
     '-csv',
     action='store_true',
-    help="Save data in csv file"
+    help="Save all parsed data within an csv file"
   )
   argparser.add_argument(
     '-json',
     action='store_true',
-    help='Save data as json file'
+    help='Save all parsed data within an json file'
   )
   argparser.add_argument(
     '-author',
     action='store_true',
-    help='Store the author.'
+    help='Store the author information.'
   )
   argparser.add_argument(
     '-title',
     action='store_true',
-    help='Store the title.'
+    help='Store the title information.'
   )
   argparser.add_argument(
     '-text',
     action='store_true',
-    help='Store the text.'
+    help='Store the text information.'
   )
 
   args = argparser.parse_args()
